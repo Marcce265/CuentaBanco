@@ -1,38 +1,40 @@
 class CuentaBanco:
     def __init__(self, titular: str, saldo_inicial: float = 0.0):
+        """
+        Constructor de la clase CuentaBanco.
+
+        :param titular: Nombre del titular de la cuenta
+        :param saldo_inicial: Saldo inicial de la cuenta (por defecto 0.0)
+        """
         self.titular = titular
-        # IMPORTANTE: Usamos __saldo para que sea privado (Encapsulamiento)
-        self.__saldo = saldo_inicial
+        self.saldo = saldo_inicial
 
     def deposito_cuenta(self, monto: float):
-        # Validación de tipo y monto positivo
-        if not isinstance(monto, (int, float)):
-            raise TypeError("El monto debe ser numérico")
-        if monto <= 0:
-            raise ValueError("El monto debe ser mayor a cero")
-        
-        self.__saldo += monto
-        print(f"Depósito exitoso. Nuevo saldo: {self.__saldo}")
+        if isinstance(monto, (int, float)) and monto > 0:
+            self.saldo += monto
+        else:
+            raise ValueError("El monto a depositar debe ser un valor positivo.")
 
     def retiro_cuenta(self, monto: float):
-        if monto <= 0:
-            raise ValueError("El monto debe ser mayor a cero")
-        if monto > self.__saldo:
-            raise ValueError("Saldo insuficiente para el retiro")
-        
-        self.__saldo -= monto
-        print(f"Retiro exitoso. Nuevo saldo: {self.__saldo}")
+        if isinstance(monto, (int, float)) and monto > 0:
+            if monto <= self.saldo:
+                self.saldo -= monto
+            else:
+                raise ValueError("Fondos insuficientes para realizar el retiro.")
+        else:
+            raise ValueError("El monto a retirar debe ser un valor positivo.")
 
     def transferencia_cuenta(self, monto: float, cuenta_destino):
-        # Validar que la cuenta destino sea del tipo correcto
         if not isinstance(cuenta_destino, CuentaBanco):
-            raise TypeError("La cuenta destino no es válida")
-        
-        # Lógica: Retirar de aquí y depositar allá
-        self.retiro_cuenta(monto)
-        cuenta_destino.deposito_cuenta(monto)
-        print(f"Transferencia de {monto} a {cuenta_destino.titular} realizada.")
+            raise ValueError("La cuenta destino no es válida.")
+        if isinstance(monto, (int, float)) and monto > 0:
+            if monto <= self.saldo:
+                self.saldo -= monto
+                cuenta_destino.saldo += monto
+            else:
+                raise ValueError("Fondos insuficientes para realizar la transferencia.")
+        else:
+            raise ValueError("El monto a transferir debe ser un valor positivo.")
 
     def saldo_cuenta(self) -> float:
-        return self.__saldo
-    
+        return self.saldo
